@@ -1,0 +1,3 @@
+com\fitgenius\config\SecurityConfig.class
+com\fitgenius\FitGeniusApplication.class
+com\fitgenius\controller\HealthController.class

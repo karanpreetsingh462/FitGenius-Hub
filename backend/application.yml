@@ -1,0 +1,40 @@
+spring:
+  profiles:
+    active: production
+  
+  # MongoDB Configuration
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/fitgenius}
+      database: fitgenius
+  
+  # JWT Configuration
+  security:
+    jwt:
+      secret: ${JWT_SECRET:your-jwt-secret-key}
+      expiration: ${JWT_EXPIRATION:86400000}
+  
+  # Email Configuration (Optional)
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+# Server Configuration
+server:
+  port: ${PORT:8080}
+  servlet:
+    context-path: /api
+
+# Logging
+logging:
+  level:
+    com.fitgenius: DEBUG
+    org.springframework: INFO 

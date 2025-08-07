@@ -1,0 +1,190 @@
+spring:
+  application:
+    name: fitgenius-backend
+  
+  # Database Configuration
+  datasource:
+    url: jdbc:mysql://localhost:3306/fitgenius?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+  
+  # JPA Configuration
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+        use_sql_comments: true
+    open-in-view: false
+  
+  # MongoDB Configuration
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/fitgenius
+      database: fitgenius
+  
+  # Redis Configuration
+  redis:
+    host: localhost
+    port: 6379
+    timeout: 2000ms
+    lettuce:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+  
+  # Mail Configuration
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:your-email@gmail.com}
+    password: ${MAIL_PASSWORD:your-app-password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  
+  # Security Configuration
+  security:
+    jwt:
+      secret: ${JWT_SECRET:fitgenius-super-secret-key-2024}
+      expiration: 86400000 # 24 hours
+      refresh-expiration: 604800000 # 7 days
+  
+  # Jackson Configuration
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+
+# Server Configuration
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+    min-response-size: 1024
+
+# Logging Configuration
+logging:
+  level:
+    com.fitgenius: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# API Documentation
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+  info:
+    title: FitGenius API
+    description: RESTful API for FitGenius fitness application
+    version: 1.0.0
+    contact:
+      name: FitGenius Team
+      email: support@fitgenius.com
+
+# Cache Configuration
+cache:
+  type: redis
+  redis:
+    time-to-live: 3600000 # 1 hour
+
+# File Upload Configuration
+file:
+  upload:
+    max-size: 10MB
+    allowed-types: jpg,jpeg,png,gif,pdf,doc,docx
+    upload-dir: ./uploads
+
+# Chatbot Configuration
+chatbot:
+  enabled: true
+  max-message-length: 500
+  response-timeout: 30000 # 30 seconds
+
+# Fitness Configuration
+fitness:
+  workout:
+    max-duration: 180 # 3 hours in minutes
+    max-exercises: 50
+  nutrition:
+    max-calories: 10000
+    max-meals-per-day: 10
+
+# Monitoring and Metrics
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+# Profiles
+---
+spring:
+  config:
+    activate:
+      on-profile: development
+  jpa:
+    show-sql: true
+  security:
+    jwt:
+      secret: dev-secret-key-change-in-production
+
+---
+spring:
+  config:
+    activate:
+      on-profile: production
+  jpa:
+    show-sql: false
+  security:
+    jwt:
+      secret: ${JWT_SECRET}
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+  data:
+    mongodb:
+      uri: ${MONGODB_URI}
+  redis:
+    host: ${REDIS_HOST}
+    password: ${REDIS_PASSWORD}
+  mail:
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+
+server:
+  port: ${PORT:8080} 
