@@ -1,11 +1,11 @@
-# FitGenius Hub 🏋️‍♂️
+# FitSphere 🏋️‍♂️
 
 A comprehensive fitness and nutrition platform that combines AI-powered chatbot assistance, personalized workout plans, diet management, and community features to help users achieve their fitness goals.
 
-![FitGenius Hub](https://img.shields.io/badge/FitGenius-Hub-brightgreen)
+![FitSphere](https://img.shields.io/badge/FitSphere-brightgreen)
 ![React](https://img.shields.io/badge/React-18.2.0-blue)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.0-green)
-![MongoDB](https://img.shields.io/badge/MongoDB-Database-yellow)
+![Node.js](https://img.shields.io/badge/Node.js-Express-blue)
+![Express](https://img.shields.io/badge/Express-API-green)
 
 ## 🌟 Features
 
@@ -56,27 +56,25 @@ A comprehensive fitness and nutrition platform that combines AI-powered chatbot 
 - **Yup**: Schema validation
 
 ### Backend
-- **Spring Boot 3.2.0**: Java-based REST API
-- **Spring Security**: Authentication and authorization
-- **Spring Data MongoDB**: Database operations
+- **Node.js**: JavaScript runtime environment
+- **Express.js**: Web application framework
 - **JWT**: Token-based authentication
 - **WebSocket**: Real-time features
-- **Spring Mail**: Email notifications
-- **SpringDoc OpenAPI**: API documentation
+- **Nodemailer**: Email notifications
+- **Swagger**: API documentation
 
 ### Database
-- **MongoDB**: NoSQL database for flexible data storage
-- **MongoDB Atlas**: Cloud database hosting
+- **SQLite/MySQL**: Relational database for data storage
+- **Cloud Database**: Flexible database hosting options
 
 ### DevOps
 - **Vercel**: Frontend deployment
-- **Maven**: Java dependency management
 - **npm**: Node.js package management
 
 ## 📁 Project Structure
 
 ```
-FitGenius/
+FitSphere/
 ├── frontend/                 # React frontend application
 │   ├── public/              # Static assets
 │   │   ├── images/         # Image assets
@@ -84,14 +82,11 @@ FitGenius/
 │   │   └── js/            # JavaScript libraries
 │   ├── src/               # React source code
 │   └── package.json       # Frontend dependencies
-├── backend/                # Spring Boot backend
-│   ├── src/main/java/     # Java source code
-│   ├── src/main/resources/ # Configuration files
-│   └── pom.xml           # Maven dependencies
 ├── routes/                # Express.js API routes
 ├── models/                # Database models
 ├── middleware/            # Authentication middleware
 ├── config/               # Database configuration
+├── backend/               # Spring Boot backend (optional)
 └── vercel.json          # Deployment configuration
 ```
 
@@ -99,9 +94,8 @@ FitGenius/
 
 ### Prerequisites
 - Node.js (v16 or higher)
-- Java 17 or higher
-- MongoDB (local or Atlas)
-- Maven 3.6+
+- npm or yarn package manager
+- Database (SQLite, MySQL, or PostgreSQL)
 
 ### Frontend Setup
 
@@ -127,31 +121,30 @@ FitGenius/
 
 ### Backend Setup
 
-1. **Navigate to backend directory**:
+1. **Navigate to project root directory**:
    ```bash
-   cd backend
+   cd FitSphere
    ```
 
 2. **Configure database**:
-   - Update `application.yml` with your MongoDB connection string
+   - Update `config/database.js` with your database connection
    - Set up environment variables for JWT secrets
 
 3. **Run the application**:
    ```bash
-   mvn spring-boot:run
+   npm start
    ```
 
 4. **Access API documentation**:
-   - Swagger UI: `http://localhost:8080/swagger-ui.html`
-   - API Base URL: `http://localhost:8080/api`
+   - API Base URL: `http://localhost:3000/api`
 
 ### Environment Variables
 
 Create a `.env` file in the frontend directory:
 
 ```env
-REACT_APP_API_URL=http://localhost:8080/api
-REACT_APP_NAME=FitGenius Hub
+REACT_APP_API_URL=http://localhost:3000/api
+REACT_APP_NAME=FitSphere
 ```
 
 ## 📚 API Endpoints
@@ -179,7 +172,7 @@ REACT_APP_NAME=FitGenius Hub
 
 ## 🤖 Chatbot Features
 
-The FitGenius chatbot provides intelligent responses for:
+The FitSphere chatbot provides intelligent responses for:
 
 - **Workout Guidance**: Personalized exercise recommendations
 - **Nutrition Advice**: Diet tips and meal planning
@@ -234,11 +227,11 @@ The application features a modern, responsive design with:
 2. Configure build settings in `vercel.json`
 3. Deploy automatically on push to main branch
 
-### Backend (Spring Boot)
-1. Build the JAR file: `mvn clean package`
+### Backend (Node.js/Express)
+1. Install dependencies: `npm install`
 2. Deploy to your preferred cloud platform
 3. Configure environment variables
-4. Set up MongoDB connection
+4. Set up database connection
 
 ## 🤝 Contributing
 
@@ -255,9 +248,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 
 - React team for the amazing framework
-- Spring Boot team for the robust backend framework
+- Express.js team for the robust backend framework
 - Material-UI for the beautiful component library
-- MongoDB team for the flexible database solution
+- Node.js team for the flexible runtime environment
 
 ## 📞 Support
 
@@ -268,4 +261,4 @@ For support and questions:
 
 ---
 
-**FitGenius Hub** - Empowering your fitness journey with AI-powered guidance and comprehensive health management tools. 💪✨ 
+**FitSphere** - Empowering your fitness journey with AI-powered guidance and comprehensive health management tools. 💪✨ 

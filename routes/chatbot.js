@@ -9,9 +9,10 @@ class FitGeniusChatbot {
   constructor() {
     this.responses = {
       greetings: [
-        "Hello! I'm GymGenius, your AI fitness assistant. How can I help you today?",
+        "Hello! I'm FitSphere AI, your personal fitness assistant. How can I help you today?",
         "Hi there! Ready to crush your fitness goals? What can I help you with?",
-        "Welcome to FitGenius Hub! I'm here to help you with your fitness journey."
+        "Welcome to FitSphere! I'm here to help you with your fitness journey.",
+        "Hey! I'm your AI fitness buddy. Let's make your fitness dreams a reality!"
       ],
       workout: {
         beginner: [
@@ -90,21 +91,21 @@ class FitGeniusChatbot {
     const lowerMessage = message.toLowerCase();
     
     // Greetings
-    if (this.containsAny(lowerMessage, ['hello', 'hi', 'hey', 'start'])) {
+    if (this.containsAny(lowerMessage, ['hello', 'hi', 'hey', 'start', 'good morning', 'good afternoon', 'good evening'])) {
       return this.getRandomResponse('greetings');
     }
 
     // Workout related
-    if (this.containsAny(lowerMessage, ['workout', 'exercise', 'training', 'gym'])) {
+    if (this.containsAny(lowerMessage, ['workout', 'exercise', 'training', 'gym', 'fitness', 'training'])) {
       const level = this.getFitnessLevel(lowerMessage, userProfile);
       return this.getRandomResponse(`workout.${level}`);
     }
 
     // Nutrition related
-    if (this.containsAny(lowerMessage, ['diet', 'nutrition', 'food', 'eat', 'meal'])) {
-      if (this.containsAny(lowerMessage, ['lose', 'weight', 'fat', 'burn'])) {
+    if (this.containsAny(lowerMessage, ['diet', 'nutrition', 'food', 'eat', 'meal', 'calories', 'protein', 'carbs'])) {
+      if (this.containsAny(lowerMessage, ['lose', 'weight', 'fat', 'burn', 'slim', 'thin'])) {
         return this.getRandomResponse('nutrition.weight_loss');
-      } else if (this.containsAny(lowerMessage, ['muscle', 'gain', 'build', 'strength'])) {
+      } else if (this.containsAny(lowerMessage, ['muscle', 'gain', 'build', 'strength', 'bulk', 'mass'])) {
         return this.getRandomResponse('nutrition.muscle_gain');
       } else {
         return this.getRandomResponse('nutrition.maintenance');
@@ -112,37 +113,51 @@ class FitGeniusChatbot {
     }
 
     // Diet plans
-    if (this.containsAny(lowerMessage, ['diet plan', 'meal plan', 'vegan', 'vegetarian'])) {
+    if (this.containsAny(lowerMessage, ['diet plan', 'meal plan', 'vegan', 'vegetarian', 'high protein', 'protein diet'])) {
       return this.generateDietPlan(lowerMessage, userProfile);
     }
 
     // Specific exercises
-    if (this.containsAny(lowerMessage, ['chest', 'push', 'bench'])) {
-      return `For chest exercises, try: ${this.responses.exercises.chest.join(', ')}. Start with 3 sets of 10-12 reps.`;
+    if (this.containsAny(lowerMessage, ['chest', 'push', 'bench', 'pecs'])) {
+      return `💪 **Chest Exercises**: ${this.responses.exercises.chest.join(', ')}. Start with 3 sets of 10-12 reps. Focus on proper form and controlled movements.`;
     }
-    if (this.containsAny(lowerMessage, ['back', 'pull', 'row'])) {
-      return `For back exercises, try: ${this.responses.exercises.back.join(', ')}. Focus on proper form.`;
+    if (this.containsAny(lowerMessage, ['back', 'pull', 'row', 'lats'])) {
+      return `🏋️ **Back Exercises**: ${this.responses.exercises.back.join(', ')}. Focus on proper form and mind-muscle connection.`;
     }
-    if (this.containsAny(lowerMessage, ['legs', 'squat', 'thigh'])) {
-      return `For leg exercises, try: ${this.responses.exercises.legs.join(', ')}. Start with bodyweight squats.`;
+    if (this.containsAny(lowerMessage, ['legs', 'squat', 'thigh', 'quads', 'hamstrings'])) {
+      return `🦵 **Leg Exercises**: ${this.responses.exercises.legs.join(', ')}. Start with bodyweight squats and progress gradually.`;
     }
-    if (this.containsAny(lowerMessage, ['shoulder', 'deltoid'])) {
-      return `For shoulder exercises, try: ${this.responses.exercises.shoulders.join(', ')}. Start light to avoid injury.`;
+    if (this.containsAny(lowerMessage, ['shoulder', 'deltoid', 'delts'])) {
+      return `💪 **Shoulder Exercises**: ${this.responses.exercises.shoulders.join(', ')}. Start light to avoid injury and focus on form.`;
     }
-    if (this.containsAny(lowerMessage, ['arm', 'bicep', 'tricep'])) {
-      return `For arm exercises, try: ${this.responses.exercises.arms.join(', ')}. Include both biceps and triceps.`;
+    if (this.containsAny(lowerMessage, ['arm', 'bicep', 'tricep', 'forearm'])) {
+      return `💪 **Arm Exercises**: ${this.responses.exercises.arms.join(', ')}. Include both biceps and triceps for balanced development.`;
     }
-    if (this.containsAny(lowerMessage, ['core', 'abs', 'stomach'])) {
-      return `For core exercises, try: ${this.responses.exercises.core.join(', ')}. Focus on stability and control.`;
+    if (this.containsAny(lowerMessage, ['core', 'abs', 'stomach', 'six pack'])) {
+      return `🔥 **Core Exercises**: ${this.responses.exercises.core.join(', ')}. Focus on stability, control, and breathing.`;
     }
 
     // Motivation
-    if (this.containsAny(lowerMessage, ['motivation', 'tired', 'hard', 'difficult', 'struggle'])) {
+    if (this.containsAny(lowerMessage, ['motivation', 'tired', 'hard', 'difficult', 'struggle', 'give up', 'quit'])) {
       return this.getRandomResponse('motivation');
     }
 
+    // Help and guidance
+    if (this.containsAny(lowerMessage, ['help', 'what can you do', 'how to use', 'guide'])) {
+      return `🤖 **I can help you with:**
+
+💪 **Workouts**: Beginner to advanced training plans
+🥗 **Nutrition**: Diet advice and meal planning  
+📊 **Fitness Goals**: Weight loss, muscle gain, maintenance
+🎯 **Specific Exercises**: Chest, back, legs, arms, core
+💪 **Motivation**: Encouragement and tips
+📋 **Diet Plans**: Vegan, vegetarian, high-protein options
+
+Just ask me anything about fitness and nutrition!`;
+    }
+
     // Default response
-    return "I'm here to help with your fitness journey! Ask me about workouts, nutrition, diet plans, or specific exercises. What would you like to know?";
+    return "I'm here to help with your fitness journey! Ask me about workouts, nutrition, diet plans, or specific exercises. What would you like to know? 💪";
   }
 
   // Generate a custom diet plan
@@ -358,8 +373,8 @@ router.post('/custom-diet', optionalAuth, [
 router.post('/general', optionalAuth, [
   body('message')
     .trim()
-    .isLength({ min: 10, max: 500 })
-    .withMessage('Message must be between 10 and 500 characters')
+    .isLength({ min: 1, max: 500 })
+    .withMessage('Message must be between 1 and 500 characters')
 ], async (req, res) => {
   try {
     // Check for validation errors
@@ -389,6 +404,48 @@ router.post('/general', optionalAuth, [
 
   } catch (error) {
     console.error('Chatbot general error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error processing your request. Please try again.'
+    });
+  }
+});
+
+// @desc    Get AI message response (simplified endpoint)
+// @route   POST /api/chatbot/message
+// @access  Public
+router.post('/message', [
+  body('message')
+    .trim()
+    .isLength({ min: 1, max: 500 })
+    .withMessage('Message must be between 1 and 500 characters')
+], async (req, res) => {
+  try {
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation error',
+        errors: errors.array()
+      });
+    }
+
+    const { message } = req.body;
+
+    // Generate response using custom chatbot
+    const response = chatbot.generateResponse(message);
+
+    res.json({
+      success: true,
+      data: {
+        message: response,
+        timestamp: new Date().toISOString()
+      }
+    });
+
+  } catch (error) {
+    console.error('Chatbot message error:', error);
     res.status(500).json({
       success: false,
       message: 'Error processing your request. Please try again.'

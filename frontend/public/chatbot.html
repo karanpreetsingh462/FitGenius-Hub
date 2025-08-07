@@ -107,27 +107,39 @@
             transform: scale(1.05);
         }
         
-        .quick-actions {
+        .response-options {
             padding: 15px 20px;
             background: #f8f9fa;
             border-top: 1px solid #e9ecef;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
         }
         
-        .quick-btn {
+        .response-btn {
             background: white;
-            border: 1px solid #e9ecef;
-            border-radius: 20px;
-            padding: 8px 16px;
+            border: 2px solid #667eea;
+            border-radius: 25px;
+            padding: 12px 20px;
             margin: 5px;
             font-size: 14px;
             color: #667eea;
             transition: all 0.3s ease;
+            cursor: pointer;
+            min-width: 120px;
+            text-align: center;
         }
         
-        .quick-btn:hover {
+        .response-btn:hover {
             background: #667eea;
             color: white;
-            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+        }
+        
+        .response-btn:active {
+            transform: translateY(0);
         }
         
         .typing-indicator {
@@ -183,28 +195,11 @@
                 </div>
             </div>
             
-            <div class="quick-actions">
-                <button class="quick-btn" onclick="sendQuickMessage('I need a beginner workout plan')">
-                    <i class="fa fa-dumbbell"></i> Beginner Workout
-                </button>
-                <button class="quick-btn" onclick="sendQuickMessage('Give me a vegan diet plan')">
-                    <i class="fa fa-leaf"></i> Vegan Diet
-                </button>
-                <button class="quick-btn" onclick="sendQuickMessage('How can I lose weight?')">
-                    <i class="fa fa-weight"></i> Weight Loss
-                </button>
-                <button class="quick-btn" onclick="sendQuickMessage('I want to build muscle')">
-                    <i class="fa fa-muscle"></i> Muscle Building
-                </button>
-                <button class="quick-btn" onclick="sendQuickMessage('Show me chest exercises')">
-                    <i class="fa fa-heart"></i> Chest Exercises
-                </button>
-                <button class="quick-btn" onclick="sendQuickMessage('I need motivation')">
-                    <i class="fa fa-fire"></i> Motivation
-                </button>
+            <div id="responseOptions" class="response-options">
+                <!-- Response options will be dynamically loaded here -->
             </div>
             
-            <div class="chat-input">
+            <div class="chat-input" style="display: none;">
                 <div class="input-group">
                     <input type="text" class="form-control" id="messageInput" placeholder="Ask me anything about fitness and nutrition..." onkeypress="handleKeyPress(event)">
                     <button class="btn-send" onclick="sendMessage()">
@@ -218,7 +213,242 @@
     <script src="/js/jquery.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     <script>
+        let conversationState = 'initial';
         let isTyping = false;
+
+        // Conversation flow configuration
+        const conversationFlow = {
+            initial: {
+                message: "Hello! I'm FitSphere AI, your personal fitness assistant. How can I help you today?",
+                options: [
+                    { text: "I want to start working out", nextState: "workout_goal" },
+                    { text: "I need nutrition advice", nextState: "nutrition_goal" },
+                    { text: "Show me exercises", nextState: "exercise_type" },
+                    { text: "I need motivation", nextState: "motivation" }
+                ]
+            },
+            workout_goal: {
+                message: "Great! What's your main fitness goal?",
+                options: [
+                    { text: "Lose weight", nextState: "weight_loss_plan" },
+                    { text: "Build muscle", nextState: "muscle_gain_plan" },
+                    { text: "Get stronger", nextState: "strength_plan" },
+                    { text: "Improve fitness", nextState: "fitness_plan" },
+                    { text: "Go back", nextState: "initial" }
+                ]
+            },
+            nutrition_goal: {
+                message: "What's your nutrition goal?",
+                options: [
+                    { text: "Lose weight", nextState: "weight_loss_nutrition" },
+                    { text: "Build muscle", nextState: "muscle_gain_nutrition" },
+                    { text: "Maintain weight", nextState: "maintenance_nutrition" },
+                    { text: "Get a diet plan", nextState: "diet_plan_type" },
+                    { text: "Go back", nextState: "initial" }
+                ]
+            },
+            exercise_type: {
+                message: "Which muscle group would you like to focus on?",
+                options: [
+                    { text: "Chest exercises", nextState: "chest_exercises" },
+                    { text: "Back exercises", nextState: "back_exercises" },
+                    { text: "Leg exercises", nextState: "leg_exercises" },
+                    { text: "Arm exercises", nextState: "arm_exercises" },
+                    { text: "Core exercises", nextState: "core_exercises" },
+                    { text: "Go back", nextState: "initial" }
+                ]
+            },
+            weight_loss_plan: {
+                message: "Perfect! For weight loss, I recommend a combination of cardio and strength training. Start with 3-4 days per week, 30-45 minutes each session. Focus on compound exercises like squats, lunges, and push-ups.",
+                options: [
+                    { text: "Show me a workout plan", nextState: "beginner_workout" },
+                    { text: "What about nutrition?", nextState: "weight_loss_nutrition" },
+                    { text: "I need motivation", nextState: "motivation" },
+                    { text: "Start over", nextState: "initial" }
+                ]
+            },
+            muscle_gain_plan: {
+                message: "Excellent choice! For muscle building, focus on progressive overload with compound movements. Train 4-5 days per week, 45-60 minutes each session. Include exercises like deadlifts, bench press, and squats.",
+                options: [
+                    { text: "Show me a workout plan", nextState: "intermediate_workout" },
+                    { text: "What about nutrition?", nextState: "muscle_gain_nutrition" },
+                    { text: "I need motivation", nextState: "motivation" },
+                    { text: "Start over", nextState: "initial" }
+                ]
+            },
+            strength_plan: {
+                message: "Strength training is fantastic! Focus on compound movements with heavy weights, 3-5 reps per set. Train 3-4 days per week with adequate rest between sessions.",
+                options: [
+                    { text: "Show me a workout plan", nextState: "advanced_workout" },
+                    { text: "What about nutrition?", nextState: "muscle_gain_nutrition" },
+                    { text: "I need motivation", nextState: "motivation" },
+                    { text: "Start over", nextState: "initial" }
+                ]
+            },
+            fitness_plan: {
+                message: "Great! For overall fitness, mix cardio, strength, and flexibility training. Aim for 5-6 days per week with variety in your workouts.",
+                options: [
+                    { text: "Show me a workout plan", nextState: "beginner_workout" },
+                    { text: "What about nutrition?", nextState: "maintenance_nutrition" },
+                    { text: "I need motivation", nextState: "motivation" },
+                    { text: "Start over", nextState: "initial" }
+                ]
+            },
+            weight_loss_nutrition: {
+                message: "For weight loss nutrition: Create a 500-calorie daily deficit. Eat lean proteins, complex carbs, and healthy fats. Track your calories and stay hydrated.",
+                options: [
+                    { text: "Give me a meal plan", nextState: "diet_plan_type" },
+                    { text: "What foods should I eat?", nextState: "weight_loss_foods" },
+                    { text: "How many calories?", nextState: "calorie_guidance" },
+                    { text: "Go back", nextState: "nutrition_goal" }
+                ]
+            },
+            muscle_gain_nutrition: {
+                message: "For muscle building: Eat 300-500 calories above maintenance. Consume 1.6-2.2g protein per kg bodyweight daily. Eat every 3-4 hours with protein in each meal.",
+                options: [
+                    { text: "Give me a meal plan", nextState: "diet_plan_type" },
+                    { text: "What foods should I eat?", nextState: "muscle_gain_foods" },
+                    { text: "Protein timing?", nextState: "protein_timing" },
+                    { text: "Go back", nextState: "nutrition_goal" }
+                ]
+            },
+            maintenance_nutrition: {
+                message: "For maintenance: Eat at maintenance calories with balanced macronutrients - 40% carbs, 30% protein, 30% fat. Focus on whole foods and listen to your body.",
+                options: [
+                    { text: "Give me a meal plan", nextState: "diet_plan_type" },
+                    { text: "What foods should I eat?", nextState: "maintenance_foods" },
+                    { text: "How to track calories?", nextState: "calorie_tracking" },
+                    { text: "Go back", nextState: "nutrition_goal" }
+                ]
+            },
+            diet_plan_type: {
+                message: "What type of diet plan would you prefer?",
+                options: [
+                    { text: "Vegan diet", nextState: "vegan_plan" },
+                    { text: "Vegetarian diet", nextState: "vegetarian_plan" },
+                    { text: "High protein diet", nextState: "high_protein_plan" },
+                    { text: "Balanced diet", nextState: "balanced_plan" },
+                    { text: "Go back", nextState: "nutrition_goal" }
+                ]
+            },
+            chest_exercises: {
+                message: "💪 **Chest Exercises**: Push-ups, Bench press, Dumbbell flyes, Incline press, Decline push-ups. Start with 3 sets of 10-12 reps. Focus on proper form and controlled movements.",
+                options: [
+                    { text: "Show me back exercises", nextState: "back_exercises" },
+                    { text: "Show me leg exercises", nextState: "leg_exercises" },
+                    { text: "Show me arm exercises", nextState: "arm_exercises" },
+                    { text: "Go back", nextState: "exercise_type" }
+                ]
+            },
+            back_exercises: {
+                message: "🏋️ **Back Exercises**: Pull-ups, Deadlifts, Rows, Lat pulldowns, Face pulls. Focus on proper form and mind-muscle connection.",
+                options: [
+                    { text: "Show me chest exercises", nextState: "chest_exercises" },
+                    { text: "Show me leg exercises", nextState: "leg_exercises" },
+                    { text: "Show me arm exercises", nextState: "arm_exercises" },
+                    { text: "Go back", nextState: "exercise_type" }
+                ]
+            },
+            leg_exercises: {
+                message: "🦵 **Leg Exercises**: Squats, Deadlifts, Lunges, Leg press, Calf raises. Start with bodyweight squats and progress gradually.",
+                options: [
+                    { text: "Show me chest exercises", nextState: "chest_exercises" },
+                    { text: "Show me back exercises", nextState: "back_exercises" },
+                    { text: "Show me arm exercises", nextState: "arm_exercises" },
+                    { text: "Go back", nextState: "exercise_type" }
+                ]
+            },
+            arm_exercises: {
+                message: "💪 **Arm Exercises**: Bicep curls, Tricep dips, Hammer curls, Skull crushers, Preacher curls. Include both biceps and triceps for balanced development.",
+                options: [
+                    { text: "Show me chest exercises", nextState: "chest_exercises" },
+                    { text: "Show me back exercises", nextState: "back_exercises" },
+                    { text: "Show me leg exercises", nextState: "leg_exercises" },
+                    { text: "Go back", nextState: "exercise_type" }
+                ]
+            },
+            core_exercises: {
+                message: "🔥 **Core Exercises**: Planks, Crunches, Russian twists, Leg raises, Mountain climbers. Focus on stability, control, and breathing.",
+                options: [
+                    { text: "Show me chest exercises", nextState: "chest_exercises" },
+                    { text: "Show me back exercises", nextState: "back_exercises" },
+                    { text: "Show me leg exercises", nextState: "leg_exercises" },
+                    { text: "Go back", nextState: "exercise_type" }
+                ]
+            },
+            motivation: {
+                message: "💪 Remember: Progress takes time. Focus on consistency over perfection. Every workout makes you stronger. Your future self will thank you for the work you put in today!",
+                options: [
+                    { text: "I want to start working out", nextState: "workout_goal" },
+                    { text: "I need nutrition advice", nextState: "nutrition_goal" },
+                    { text: "Show me exercises", nextState: "exercise_type" },
+                    { text: "Start over", nextState: "initial" }
+                ]
+            },
+            beginner_workout: {
+                message: "🏋️ **Beginner Workout Plan**:\n\nDay 1: Upper Body (Push-ups, Rows, Planks)\nDay 2: Lower Body (Squats, Lunges, Calf raises)\nDay 3: Rest\nDay 4: Full Body (Burpees, Mountain climbers, Planks)\nDay 5: Rest\nDay 6: Cardio (Walking, Jogging)\nDay 7: Rest\n\nStart with 3 sets of 10 reps each exercise.",
+                options: [
+                    { text: "What about nutrition?", nextState: "weight_loss_nutrition" },
+                    { text: "Show me exercises", nextState: "exercise_type" },
+                    { text: "I need motivation", nextState: "motivation" },
+                    { text: "Start over", nextState: "initial" }
+                ]
+            },
+            intermediate_workout: {
+                message: "💪 **Intermediate Workout Plan**:\n\nDay 1: Chest & Triceps (Bench press, Push-ups, Dips)\nDay 2: Back & Biceps (Pull-ups, Rows, Curls)\nDay 3: Legs (Squats, Deadlifts, Lunges)\nDay 4: Shoulders & Arms (Press, Lateral raises, Curls)\nDay 5: Rest\nDay 6: Full Body Circuit\nDay 7: Rest\n\n3-4 sets of 8-12 reps each exercise.",
+                options: [
+                    { text: "What about nutrition?", nextState: "muscle_gain_nutrition" },
+                    { text: "Show me exercises", nextState: "exercise_type" },
+                    { text: "I need motivation", nextState: "motivation" },
+                    { text: "Start over", nextState: "initial" }
+                ]
+            },
+            advanced_workout: {
+                message: "🔥 **Advanced Workout Plan**:\n\nDay 1: Push (Bench, Overhead press, Dips)\nDay 2: Pull (Deadlifts, Pull-ups, Rows)\nDay 3: Legs (Squats, Lunges, Calf raises)\nDay 4: Rest\nDay 5: Upper Body (Supersets)\nDay 6: Lower Body (Heavy compounds)\nDay 7: Rest\n\n4-5 sets of 3-8 reps for strength.",
+                options: [
+                    { text: "What about nutrition?", nextState: "muscle_gain_nutrition" },
+                    { text: "Show me exercises", nextState: "exercise_type" },
+                    { text: "I need motivation", nextState: "motivation" },
+                    { text: "Start over", nextState: "initial" }
+                ]
+            },
+            vegan_plan: {
+                message: "🌱 **Vegan Diet Plan**:\n\n🌅 Breakfast: Oatmeal with berries, chia seeds, and almond milk\n🌞 Lunch: Quinoa bowl with chickpeas and vegetables\n🌙 Dinner: Lentil curry with brown rice\n🍎 Snacks: Hummus with carrots, mixed nuts\n\n💡 Tips: Include protein with every meal, stay hydrated, choose whole foods.",
+                options: [
+                    { text: "Show me vegetarian plan", nextState: "vegetarian_plan" },
+                    { text: "Show me high protein plan", nextState: "high_protein_plan" },
+                    { text: "I need motivation", nextState: "motivation" },
+                    { text: "Start over", nextState: "initial" }
+                ]
+            },
+            vegetarian_plan: {
+                message: "🥗 **Vegetarian Diet Plan**:\n\n🌅 Breakfast: Greek yogurt with granola and honey\n🌞 Lunch: Mediterranean salad with feta cheese\n🌙 Dinner: Grilled halloumi with quinoa\n🍎 Snacks: Cottage cheese with fruit, hard-boiled eggs\n\n💡 Tips: Include protein with every meal, stay hydrated, choose whole foods.",
+                options: [
+                    { text: "Show me vegan plan", nextState: "vegan_plan" },
+                    { text: "Show me high protein plan", nextState: "high_protein_plan" },
+                    { text: "I need motivation", nextState: "motivation" },
+                    { text: "Start over", nextState: "initial" }
+                ]
+            },
+            high_protein_plan: {
+                message: "💪 **High Protein Diet Plan**:\n\n🌅 Breakfast: Protein pancakes with whey protein and eggs\n🌞 Lunch: Grilled chicken breast with sweet potato\n🌙 Dinner: Salmon with quinoa and asparagus\n🍎 Snacks: Protein shake, Greek yogurt, turkey jerky\n\n💡 Tips: Eat every 3-4 hours, include protein with every meal.",
+                options: [
+                    { text: "Show me vegan plan", nextState: "vegan_plan" },
+                    { text: "Show me vegetarian plan", nextState: "vegetarian_plan" },
+                    { text: "I need motivation", nextState: "motivation" },
+                    { text: "Start over", nextState: "initial" }
+                ]
+            },
+            balanced_plan: {
+                message: "⚖️ **Balanced Diet Plan**:\n\n🌅 Breakfast: Eggs with whole grain toast and avocado\n🌞 Lunch: Grilled chicken salad with mixed greens\n🌙 Dinner: Fish with brown rice and vegetables\n🍎 Snacks: Greek yogurt, mixed nuts, fruit\n\n💡 Tips: 40% carbs, 30% protein, 30% fat. Eat mindfully.",
+                options: [
+                    { text: "Show me vegan plan", nextState: "vegan_plan" },
+                    { text: "Show me high protein plan", nextState: "high_protein_plan" },
+                    { text: "I need motivation", nextState: "motivation" },
+                    { text: "Start over", nextState: "initial" }
+                ]
+            }
+        };
 
         function addMessage(message, isUser = false) {
             const chatMessages = document.getElementById('chatMessages');
@@ -227,7 +457,7 @@
             
             const contentDiv = document.createElement('div');
             contentDiv.className = 'message-content';
-            contentDiv.innerHTML = message;
+            contentDiv.innerHTML = message.replace(/\n/g, '<br>');
             
             messageDiv.appendChild(contentDiv);
             chatMessages.appendChild(messageDiv);
@@ -259,58 +489,61 @@
             }
         }
 
-        async function sendMessage() {
-            const messageInput = document.getElementById('messageInput');
-            const message = messageInput.value.trim();
+        function updateResponseOptions(options) {
+            const responseOptions = document.getElementById('responseOptions');
+            responseOptions.innerHTML = '';
             
-            if (!message) return;
-            
-            // Add user message
-            addMessage(message, true);
-            messageInput.value = '';
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'response-btn';
+                button.textContent = option.text;
+                button.onclick = () => selectOption(option.text, option.nextState);
+                responseOptions.appendChild(button);
+            });
+        }
+
+        function selectOption(selectedText, nextState) {
+            // Add user's selection to chat
+            addMessage(selectedText, true);
             
             // Show typing indicator
             showTypingIndicator();
             
-            try {
-                const response = await fetch('/api/chatbot/general', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ message })
-                });
-                
-                const data = await response.json();
-                
-                // Hide typing indicator
+            // Simulate bot thinking
+            setTimeout(() => {
                 hideTypingIndicator();
                 
-                if (data.success) {
-                    addMessage(data.data.message);
+                // Update conversation state
+                conversationState = nextState;
+                
+                // Get next conversation step
+                const nextStep = conversationFlow[nextState];
+                
+                if (nextStep) {
+                    // Add bot's response
+                    addMessage(nextStep.message);
+                    
+                    // Update response options
+                    updateResponseOptions(nextStep.options);
                 } else {
-                    addMessage('Sorry, I encountered an error. Please try again.');
+                    // Fallback to initial state
+                    conversationState = 'initial';
+                    const initialStep = conversationFlow.initial;
+                    addMessage(initialStep.message);
+                    updateResponseOptions(initialStep.options);
                 }
-            } catch (error) {
-                hideTypingIndicator();
-                addMessage('Sorry, I\'m having trouble connecting. Please try again.');
-            }
+            }, 1000);
         }
 
-        function sendQuickMessage(message) {
-            document.getElementById('messageInput').value = message;
-            sendMessage();
+        function startConversation() {
+            const initialStep = conversationFlow.initial;
+            addMessage(initialStep.message);
+            updateResponseOptions(initialStep.options);
         }
 
-        function handleKeyPress(event) {
-            if (event.key === 'Enter') {
-                sendMessage();
-            }
-        }
-
-        // Focus on input when page loads
+        // Start conversation when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('messageInput').focus();
+            startConversation();
         });
     </script>
 </body>

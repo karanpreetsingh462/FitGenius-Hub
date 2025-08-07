@@ -1,78 +1,64 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
 
-// Protect routes - require authentication
-const protect = async (req, res, next) => {
-  let token;
-
-  // Check for token in headers
-  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-    token = req.headers.authorization.split(' ')[1];
-  }
-
-  // Check if token exists
-  if (!token) {
-    return res.status(401).json({
-      success: false,
-      message: 'Not authorized to access this route'
-    });
-  }
-
+// Optional authentication middleware
+const optionalAuth = (req, res, next) => {
   try {
-    // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+    
+    if (token) {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+      req.user = decoded;
+    }
+    
+    next();
+  } catch (error) {
+    // Continue without authentication
+    next();
+  }
+};
 
-    // Get user from token
-    req.user = await User.findById(decoded.id).select('-password');
-
-    if (!req.user) {
+// Protected route middleware
+const protect = (req, res, next) => {
+  try {
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+    
+    if (!token) {
       return res.status(401).json({
         success: false,
-        message: 'User not found'
+        message: 'Access denied. No token provided.'
       });
     }
-
+    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+    req.user = decoded;
     next();
   } catch (error) {
     return res.status(401).json({
       success: false,
-      message: 'Not authorized to access this route'
+      message: 'Invalid token.'
     });
   }
 };
 
-// Grant access to specific roles
+// Authorization middleware
 const authorize = (...roles) => {
   return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Access denied. Authentication required.'
+      });
+    }
+    
     if (!roles.includes(req.user.role)) {
       return res.status(403).json({
         success: false,
-        message: `User role '${req.user.role}' is not authorized to access this route`
+        message: 'Access denied. Insufficient permissions.'
       });
     }
+    
     next();
   };
-};
-
-// Optional authentication - doesn't require token but adds user if available
-const optionalAuth = async (req, res, next) => {
-  let token;
-
-  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-    token = req.headers.authorization.split(' ')[1];
-  }
-
-  if (token) {
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = await User.findById(decoded.id).select('-password');
-    } catch (error) {
-      // Token is invalid but we don't block the request
-      req.user = null;
-    }
-  }
-
-  next();
 };
 
 module.exports = {
